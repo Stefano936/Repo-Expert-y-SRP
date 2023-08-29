@@ -5,10 +5,27 @@ namespace Library
 {
     public class AppointmentService
     {
-        public static string CreateAppointment(string name, string id, string phoneNumber, DateTime date, string appoinmentPlace, string doctorName)
-        {
+        private ConsultaMedica ConsultaMedica { get; set;}
+        private Paciente Pacient { get; set;}
+        public AppointmentService(Paciente pacient, ConsultaMedica cm) {
+            this.ConsultaMedica = cm;
+            this.Pacient = pacient;
+        }
+        public ResultadoConsulta Schedule() {
+            return this.CheckAppointment();
+        }
+        private ResultadoConsulta CheckAppointment() {
             StringBuilder stringBuilder = new StringBuilder("Scheduling appointment...\n");
             Boolean isValid = true;
+
+            InfoPaciente ip = this.Pacient.GetInfoPaciente();
+            string name = ip.GetName();
+            string id = ip.GetId();
+            string phoneNumber = ip.GetPhoneNumber();
+
+            ConsultaMedica dm = this.ConsultaMedica;
+            string appoinmentPlace = dm.GetAppointmentPlace();
+            string doctorName = dm.GetDoctorName();
 
             if (string.IsNullOrEmpty(name))
             {
@@ -46,8 +63,14 @@ namespace Library
                 stringBuilder.Append("Appoinment scheduled");
             }
 
-            return stringBuilder.ToString();
+            return new ResultadoConsulta(isValid, stringBuilder.ToString());
         }
-
     }
 }
+
+/*
+La critica que le podemos realizar a este codigo, es que debemos dividir el codigo, en 5 clases distintas
+(ConsultaMedica, ResultadosConsulta, Paciente, InfoPaciente y AppointmentService), esto debido a que en el
+codigo dado, se puede observar como una misma clase tiene responsabilidades que no le corresponden, por ejemplo
+el nombre del paciente, información del paciente, entre otras cosas. 
+*/
